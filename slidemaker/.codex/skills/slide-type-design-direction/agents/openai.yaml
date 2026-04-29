@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type Design Direction"
+  short_description: "Create design direction slides"
+  default_prompt: "Create a HyperFrames design direction slide for this deck."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type Goal"
+  short_description: "Create project goal slides"
+  default_prompt: "Create a HyperFrames project goal slide for this deck."

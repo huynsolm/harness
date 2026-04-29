@@ -1,0 +1,6 @@
+{
+  "projectPolicy": "Preview must only run on port 3000.",
+  "beforePreview": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-preview-port.ps1",
+  "preview": "npm run preview",
+  "hookEntrypoint": ".codex/hooks/preview-3000.ps1"
+}

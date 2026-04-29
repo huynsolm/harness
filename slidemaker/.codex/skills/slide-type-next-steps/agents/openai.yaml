@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type Next Steps"
+  short_description: "Create next steps slide types"
+  default_prompt: "Create a HyperFrames next steps slide for this deck."

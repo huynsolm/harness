@@ -1,0 +1,15 @@
+Preparing preview port 3000...
+Checking listening ports 3000-3010 before starting preview.
+No listening processes found near port 3000.
+
+> prepreview
+> powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-preview-port.ps1
+
+Preparing preview port 3000...
+Checking listening ports 3000-3010 before starting preview.
+No listening processes found near port 3000.
+
+> preview
+> node scripts/static-preview-server.mjs
+
+Static preview running at http://127.0.0.1:3000

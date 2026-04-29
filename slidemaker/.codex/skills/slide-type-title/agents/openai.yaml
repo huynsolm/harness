@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type Title"
+  short_description: "Create project title slides"
+  default_prompt: "Create a HyperFrames project title slide for this deck."

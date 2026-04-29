@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type Demo Result"
+  short_description: "Create demo and result slides"
+  default_prompt: "Create a HyperFrames demo/result slide for this deck."

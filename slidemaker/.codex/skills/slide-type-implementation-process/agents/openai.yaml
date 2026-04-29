@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type Implementation Process"
+  short_description: "Create implementation process slides"
+  default_prompt: "Create a HyperFrames implementation process slide for this deck."

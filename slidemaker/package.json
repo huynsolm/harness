@@ -1,0 +1,10 @@
+{
+  "name": "slidemaker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepreview": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-preview-port.ps1",
+    "preview": "node scripts/static-preview-server.mjs",
+    "preview:clean": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-preview-port.ps1"
+  }
+}

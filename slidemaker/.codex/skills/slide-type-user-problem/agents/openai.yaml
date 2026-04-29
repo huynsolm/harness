@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type User Problem"
+  short_description: "Create user and problem slides"
+  default_prompt: "Create a HyperFrames user/problem slide for this deck."

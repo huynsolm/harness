@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ChatGPT 최신 뉴스 브리핑</title>
+    <style>
+      :root {
+        --paper: #f1f4f7;
+        --ink: #1c2b33;
+        --muted: #5d6c7b;
+        --line: #dee3e9;
+        --blue: #0064e0;
+        --blue-dark: #0143b5;
+        --blue-soft: #e8f3ff;
+        --red: #d6311f;
+        --purple: #6441d2;
+        --green: #007d1e;
+        --white: #ffffff;
+        --dark: #1c1e21;
+        --wash: #f7f8fa;
+        --shadow: 0 12px 28px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Aptos", "Segoe UI", "Noto Sans KR", sans-serif;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        padding: 28px;
+      }
+
+      .deck-shell {
+        width: min(100%, 1200px);
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .toolbar strong {
+        color: var(--ink);
+      }
+
+      .controls {
+        display: flex;
+        gap: 8px;
+      }
+
+      button {
+        border: 1px solid var(--line);
+        background: var(--white);
+        color: var(--ink);
+        border-radius: 999px;
+        min-width: 42px;
+        height: 36px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      button:hover,
+      button:focus-visible {
+        border-color: var(--blue);
+        outline: 3px solid rgba(0, 100, 224, 0.16);
+      }
+
+      #root {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        padding: clamp(42px, 5vw, 76px);
+        background: var(--white);
+      }
+
+      .slide.is-active {
+        display: grid;
+      }
+
+      .slide.dark {
+        background: var(--dark);
+        color: var(--white);
+      }
+
+      .slide.dark p,
+      .slide.dark .muted,
+      .slide.dark .slide-tag {
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .slide::after {
+        content: attr(data-label);
+        position: absolute;
+        right: 34px;
+        bottom: 28px;
+        color: var(--muted);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .slide.dark::after {
+        color: rgba(255, 255, 255, 0.56);
+      }
+
+      .kicker {
+        color: var(--blue);
+        font-size: clamp(14px, 1.3vw, 18px);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .dark .kicker {
+        color: #47a5fa;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        max-width: 920px;
+        font-size: clamp(56px, 7.1vw, 98px);
+        font-weight: 650;
+      }
+
+      h2 {
+        max-width: 820px;
+        font-size: clamp(38px, 5.1vw, 72px);
+        font-weight: 620;
+      }
+
+      h3 {
+        font-size: clamp(22px, 2.3vw, 34px);
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(18px, 2vw, 28px);
+        line-height: 1.42;
+      }
+
+      .title-layout {
+        align-content: space-between;
+      }
+
+      .title-copy,
+      .stack {
+        display: grid;
+        gap: 22px;
+      }
+
+      .metadata-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        border-top: 1px solid var(--line);
+        padding-top: 22px;
+        color: var(--muted);
+        font-size: clamp(16px, 1.5vw, 22px);
+      }
+
+      .dark .metadata-row {
+        border-color: rgba(255, 255, 255, 0.18);
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .two-column {
+        grid-template-columns: 1.02fr 0.98fr;
+        align-items: center;
+        gap: clamp(28px, 5vw, 72px);
+      }
+
+      .showcase {
+        min-height: 410px;
+        border-radius: 24px;
+        background: var(--wash);
+        border: 1px solid var(--line);
+        padding: 28px;
+        display: grid;
+        align-content: center;
+        gap: 18px;
+        overflow: hidden;
+      }
+
+      .dark .showcase {
+        background: #0f1113;
+        border-color: rgba(255, 255, 255, 0.16);
+      }
+
+      .chat-window {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 18px;
+        display: grid;
+        gap: 12px;
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.10);
+      }
+
+      .message {
+        border-radius: 16px;
+        padding: 14px 16px;
+        color: var(--ink);
+        font-size: clamp(15px, 1.35vw, 20px);
+        line-height: 1.35;
+      }
+
+      .message.user {
+        justify-self: end;
+        width: 78%;
+        background: var(--blue);
+        color: var(--white);
+      }
+
+      .message.ai {
+        justify-self: start;
+        width: 86%;
+        background: var(--blue-soft);
+      }
+
+      .pill-row,
+      .news-grid,
+      .timeline,
+      .next-steps,
+      .source-list {
+        display: grid;
+        gap: 16px;
+      }
+
+      .pill-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .pill {
+        min-height: 142px;
+        border-radius: 20px;
+        padding: 22px;
+        background: var(--blue-soft);
+        display: grid;
+        align-content: space-between;
+      }
+
+      .pill b,
+      .source-list b,
+      .next-step b {
+        font-size: clamp(20px, 2vw, 30px);
+      }
+
+      .pill span,
+      .source-list span,
+      .next-step span,
+      .timeline span {
+        color: var(--muted);
+        font-size: clamp(15px, 1.45vw, 20px);
+        line-height: 1.36;
+      }
+
+      .timeline {
+        align-self: center;
+      }
+
+      .timeline-item {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: 18px;
+        align-items: start;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .timeline time {
+        color: var(--blue);
+        font-weight: 800;
+        font-size: clamp(16px, 1.5vw, 21px);
+      }
+
+      .timeline b {
+        display: block;
+        margin-bottom: 6px;
+        font-size: clamp(19px, 1.8vw, 25px);
+      }
+
+      .model-card {
+        min-height: 470px;
+        border-radius: 24px;
+        background: #0f1113;
+        color: var(--white);
+        padding: 34px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 28px;
+      }
+
+      .model-card .label {
+        width: fit-content;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        padding: 8px 14px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 14px;
+      }
+
+      .model-card .big {
+        align-self: center;
+        color: var(--white);
+        font-size: clamp(72px, 9vw, 126px);
+        font-weight: 750;
+        line-height: 0.9;
+      }
+
+      .capability-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .capability-list div {
+        display: grid;
+        grid-template-columns: 30px 1fr;
+        gap: 14px;
+        align-items: start;
+        font-size: clamp(18px, 1.75vw, 24px);
+        line-height: 1.32;
+      }
+
+      .marker {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--blue-soft);
+        color: var(--blue);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .image-board {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .image-tile {
+        min-height: 190px;
+        border-radius: 20px;
+        padding: 22px;
+        display: grid;
+        align-content: end;
+        color: var(--white);
+        background: #1c2b33;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .image-tile::before {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 14px;
+      }
+
+      .image-tile.blue {
+        background: #0064e0;
+      }
+
+      .image-tile.red {
+        background: #d6311f;
+      }
+
+      .image-tile.purple {
+        background: #6441d2;
+      }
+
+      .image-tile.green {
+        background: #007d1e;
+      }
+
+      .image-tile b,
+      .image-tile span {
+        position: relative;
+      }
+
+      .image-tile b {
+        display: block;
+        margin-bottom: 8px;
+        font-size: clamp(20px, 2vw, 30px);
+      }
+
+      .image-tile span {
+        color: rgba(255, 255, 255, 0.78);
+        font-size: clamp(15px, 1.45vw, 20px);
+        line-height: 1.34;
+      }
+
+      .device-frame {
+        min-height: 460px;
+        border-radius: 38px;
+        border: 12px solid #111315;
+        background: var(--white);
+        padding: 22px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.20);
+        display: grid;
+        gap: 14px;
+      }
+
+      .device-top {
+        height: 28px;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .app-row {
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        border-radius: 14px;
+        background: var(--wash);
+      }
+
+      .app-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--blue);
+      }
+
+      .app-row b {
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      .app-row span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .pricing-grid,
+      .risk-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        align-self: end;
+      }
+
+      .price-card,
+      .risk-card,
+      .source-card,
+      .next-step {
+        min-height: 210px;
+        border-radius: 20px;
+        padding: 24px;
+        background: var(--wash);
+        border: 1px solid var(--line);
+        display: grid;
+        align-content: space-between;
+      }
+
+      .price-card strong {
+        color: var(--blue);
+        font-size: clamp(36px, 4vw, 58px);
+        line-height: 1;
+      }
+
+      .price-card span,
+      .risk-card span {
+        color: var(--muted);
+        font-size: clamp(15px, 1.45vw, 20px);
+        line-height: 1.35;
+      }
+
+      .risk-card:nth-child(2) {
+        background: #fff6f4;
+        border-color: rgba(214, 49, 31, 0.22);
+      }
+
+      .risk-card:nth-child(3) {
+        background: var(--blue-soft);
+        border-color: rgba(0, 100, 224, 0.18);
+      }
+
+      .source-list {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .source-card {
+        min-height: 142px;
+      }
+
+      .source-card span {
+        display: block;
+        margin-top: 8px;
+      }
+
+      .next-steps {
+        grid-template-columns: 1fr 1fr 1fr;
+        align-self: end;
+      }
+
+      .next-step {
+        background: var(--blue-soft);
+      }
+
+      .progress {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 6px;
+        margin-top: 14px;
+      }
+
+      .progress button {
+        min-width: 0;
+        height: 7px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: var(--line);
+      }
+
+      .progress button.is-active {
+        background: var(--blue);
+      }
+
+      @media (max-width: 760px) {
+        body {
+          padding: 14px;
+        }
+
+        .toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        #root {
+          aspect-ratio: 9 / 16;
+        }
+
+        .slide {
+          padding: 34px 26px;
+        }
+
+        .two-column,
+        .pill-row,
+        .image-board,
+        .pricing-grid,
+        .risk-grid,
+        .source-list,
+        .next-steps {
+          grid-template-columns: 1fr;
+        }
+
+        .timeline-item {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .showcase,
+        .model-card,
+        .device-frame {
+          min-height: 300px;
+        }
+
+        .metadata-row {
+          flex-direction: column;
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck-shell" aria-label="ChatGPT latest news slide deck">
+      <div class="toolbar">
+        <div><strong id="slideName">Title</strong> <span id="slideCounter">1 / 10</span></div>
+        <div class="controls" aria-label="Slide navigation">
+          <button type="button" id="prevBtn" aria-label="Previous slide">&lt;</button>
+          <button type="button" id="nextBtn" aria-label="Next slide">&gt;</button>
+        </div>
+      </div>
+
+      <section
+        id="root"
+        data-composition-id="chatgpt-news-briefing"
+        data-start="0"
+        data-width="1920"
+        data-height="1080"
+      >
+        <article
+          id="slide-title"
+          class="slide clip title-layout is-active"
+          data-label="01 / 10"
+          data-slide-name="Title"
+          data-start="0"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="title-copy">
+            <div class="kicker">ChatGPT News Briefing</div>
+            <h1>ChatGPT 최신 뉴스</h1>
+            <p>2026년 4월 기준, ChatGPT는 챗봇을 넘어 실제 일을 끝내는 AI 작업 플랫폼으로 확장되고 있다.</p>
+          </div>
+          <div class="metadata-row">
+            <span>OpenAI / ChatGPT 업데이트 요약</span>
+            <span>2026.04.30</span>
+          </div>
+        </article>
+
+        <article
+          id="slide-overview"
+          class="slide clip two-column"
+          data-label="02 / 10"
+          data-slide-name="Overview"
+          data-start="6"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="stack">
+            <div class="kicker">Overview</div>
+            <h2>이번 변화의 핵심은 “답변”보다 “완료”다</h2>
+            <p>최근 업데이트는 모델 성능, 이미지 생성, 앱 연결, 요금제, 안전 검증을 한 방향으로 묶는다.</p>
+          </div>
+          <div class="pill-row">
+            <div class="pill"><b>모델</b><span>GPT-5.5로 복잡한 작업 수행 능력 강화</span></div>
+            <div class="pill"><b>제품</b><span>이미지, 음성, 앱 연결을 ChatGPT 안으로 통합</span></div>
+            <div class="pill"><b>운영</b><span>요금제, 광고, 안전성 검증이 함께 재편</span></div>
+          </div>
+        </article>
+
+        <article
+          id="slide-timeline"
+          class="slide clip two-column"
+          data-label="03 / 10"
+          data-slide-name="News Timeline"
+          data-start="12"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="stack">
+            <div class="kicker">News Timeline</div>
+            <h2>4월 업데이트가 짧은 간격으로 이어졌다</h2>
+            <p>ChatGPT의 최근 뉴스는 단일 기능 출시보다 제품 방향 전환에 가깝다.</p>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <time>Apr 2</time>
+              <div><b>CarPlay 지원</b><span>차량 안에서 음성 대화를 시작하고 이어갈 수 있는 경험 추가</span></div>
+            </div>
+            <div class="timeline-item">
+              <time>Apr 16</time>
+              <div><b>일부 국가 광고 롤아웃</b><span>Free 및 Go 플랜에 광고 실험 확대</span></div>
+            </div>
+            <div class="timeline-item">
+              <time>Apr 21</time>
+              <div><b>Images 2.0</b><span>텍스트 렌더링과 시각적 추론이 강화된 이미지 생성</span></div>
+            </div>
+            <div class="timeline-item">
+              <time>Apr 23</time>
+              <div><b>GPT-5.5</b><span>코딩, 리서치, 데이터 분석, 컴퓨터 사용 능력 강화</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article
+          id="slide-gpt55"
+          class="slide clip two-column dark"
+          data-label="04 / 10"
+          data-slide-name="GPT-5.5"
+          data-start="18"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="stack">
+            <div class="kicker">GPT-5.5</div>
+            <h2>새 모델은 복잡한 업무를 더 오래 끌고 간다</h2>
+            <p>OpenAI는 GPT-5.5를 코딩, 리서치, 데이터 분석, 문서 작성, 도구 사용에 강한 모델로 소개했다.</p>
+          </div>
+          <div class="model-card">
+            <div class="label">Released Apr 23, 2026</div>
+            <div class="big">5.5</div>
+            <div class="capability-list">
+              <div><span class="marker">1</span><span>목표를 해석하고 작업 계획을 세움</span></div>
+              <div><span class="marker">2</span><span>도구를 사용하며 중간 결과를 점검</span></div>
+              <div><span class="marker">3</span><span>모호한 요청에서도 끝까지 진행</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article
+          id="slide-agentic"
+          class="slide clip two-column"
+          data-label="05 / 10"
+          data-slide-name="Agentic Work"
+          data-start="24"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="stack">
+            <div class="kicker">Agentic Work</div>
+            <h2>ChatGPT는 작업 관리자처럼 움직이기 시작했다</h2>
+            <p>사용자는 세부 절차를 모두 지시하기보다 “무엇을 끝낼지”를 말하고, ChatGPT가 도구 사이를 이동한다.</p>
+          </div>
+          <div class="showcase">
+            <div class="chat-window">
+              <div class="message user">이번 주 발표 자료를 최신 뉴스 기준으로 10장 구성해줘.</div>
+              <div class="message ai">뉴스 확인, 핵심 이슈 분류, 슬라이드 흐름 설계, 출처 정리까지 진행할게요.</div>
+              <div class="message user">이미지 생성과 요금제 변화도 넣어줘.</div>
+              <div class="message ai">모델, 이미지, 앱 연결, 수익 모델, 안전성 순서로 정리했습니다.</div>
+            </div>
+          </div>
+        </article>
+
+        <article
+          id="slide-images"
+          class="slide clip two-column"
+          data-label="06 / 10"
+          data-slide-name="Images 2.0"
+          data-start="30"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="stack">
+            <div class="kicker">ChatGPT Images 2.0</div>
+            <h2>이미지 생성은 더 정확한 제작 도구가 됐다</h2>
+            <p>새 이미지 모델은 문자를 더 잘 넣고, 다국어 지시와 이미지 편집을 더 안정적으로 처리하는 방향이다.</p>
+          </div>
+          <div class="image-board">
+            <div class="image-tile blue"><b>Text in image</b><span>포스터, 썸네일, 안내문에 들어가는 글자 표현 개선</span></div>
+            <div class="image-tile red"><b>Editing</b><span>기존 이미지를 업로드하고 배경, 색상, 요소를 수정</span></div>
+            <div class="image-tile purple"><b>Reasoning</b><span>레이아웃과 장면 조건을 이해해 시각적으로 반영</span></div>
+            <div class="image-tile green"><b>All tiers</b><span>기본 이미지 생성은 모든 플랜에서 제공</span></div>
+          </div>
+        </article>
+
+        <article
+          id="slide-apps"
+          class="slide clip two-column"
+          data-label="07 / 10"
+          data-slide-name="Apps & Mobility"
+          data-start="36"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="stack">
+            <div class="kicker">Apps & Mobility</div>
+            <h2>ChatGPT는 앱과 이동 환경으로 넓어지고 있다</h2>
+            <p>Outlook 공유 리소스, 캘린더, CarPlay 같은 업데이트는 ChatGPT가 일상 업무 흐름에 더 깊게 들어간다는 신호다.</p>
+          </div>
+          <div class="device-frame">
+            <div class="device-top">ChatGPT connected workspace</div>
+            <div class="app-row"><span class="app-icon"></span><div><b>Outlook shared mailbox</b><span>공유 메일함 읽기, 이동, 발송 지원</span></div></div>
+            <div class="app-row"><span class="app-icon"></span><div><b>Calendar</b><span>공유 일정 생성, 수정, RSVP, 취소</span></div></div>
+            <div class="app-row"><span class="app-icon"></span><div><b>Apple CarPlay</b><span>운전 중 음성 대화 시작과 이어가기</span></div></div>
+          </div>
+        </article>
+
+        <article
+          id="slide-business"
+          class="slide clip"
+          data-label="08 / 10"
+          data-slide-name="Plans & Ads"
+          data-start="42"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="stack">
+            <div class="kicker">Plans & Ads</div>
+            <h2>요금제와 수익 모델도 바뀌고 있다</h2>
+            <p>ChatGPT는 Pro 옵션과 Codex 사용량을 조정하고, 일부 국가의 Free 및 Go 플랜에서 광고를 실험하고 있다.</p>
+          </div>
+          <div class="pricing-grid">
+            <div class="price-card"><strong>$20</strong><span>Plus는 일상적 사용 중심으로 재조정</span></div>
+            <div class="price-card"><strong>$100</strong><span>새 Pro 옵션은 긴 Codex 세션에 초점</span></div>
+            <div class="price-card"><strong>Ads</strong><span>호주, 뉴질랜드, 캐나다 Free/Go 플랜에서 광고 롤아웃</span></div>
+          </div>
+        </article>
+
+        <article
+          id="slide-safety"
+          class="slide clip"
+          data-label="09 / 10"
+          data-slide-name="Safety & Trust"
+          data-start="48"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="stack">
+            <div class="kicker">Safety & Trust</div>
+            <h2>성능이 강해질수록 신뢰 검증이 핵심 이슈가 된다</h2>
+            <p>OpenAI는 GPT-5.5 시스템 카드와 Bio Bug Bounty를 공개했고, 서비스 안정성 이슈도 함께 주목받았다.</p>
+          </div>
+          <div class="risk-grid">
+            <div class="risk-card"><h3>System Card</h3><span>출시 전 안전 평가와 레드팀 결과를 문서화</span></div>
+            <div class="risk-card"><h3>Bio Bug Bounty</h3><span>생물학 관련 위험을 겨냥한 제한적 보안 테스트 프로그램</span></div>
+            <div class="risk-card"><h3>Reliability</h3><span>4월 서비스 장애 보도는 운영 안정성의 중요성을 상기</span></div>
+          </div>
+        </article>
+
+        <article
+          id="slide-closing"
+          class="slide clip title-layout"
+          data-label="10 / 10"
+          data-slide-name="Closing"
+          data-start="54"
+          data-duration="6"
+          data-track-index="0"
+        >
+          <div class="title-copy">
+            <div class="kicker">Closing</div>
+            <h2>ChatGPT의 다음 경쟁 축은 AI 작업 플랫폼이다</h2>
+            <p>모델은 더 강해지고, 인터페이스는 넓어지고, 제품은 사용자의 업무 흐름 안으로 들어가고 있다.</p>
+          </div>
+          <div class="source-list">
+            <div class="source-card"><b>주요 출처</b><span>OpenAI GPT-5.5, Images 2.0, ChatGPT Release Notes, Help Center</span></div>
+            <div class="source-card"><b>발표 포인트</b><span>최신성은 날짜와 출처를 함께 보여주고, 루머는 공식 발표와 구분한다.</span></div>
+          </div>
+        </article>
+      </section>
+
+      <nav class="progress" aria-label="Jump to slide">
+        <button type="button" class="is-active" aria-label="Go to slide 1"></button>
+        <button type="button" aria-label="Go to slide 2"></button>
+        <button type="button" aria-label="Go to slide 3"></button>
+        <button type="button" aria-label="Go to slide 4"></button>
+        <button type="button" aria-label="Go to slide 5"></button>
+        <button type="button" aria-label="Go to slide 6"></button>
+        <button type="button" aria-label="Go to slide 7"></button>
+        <button type="button" aria-label="Go to slide 8"></button>
+        <button type="button" aria-label="Go to slide 9"></button>
+        <button type="button" aria-label="Go to slide 10"></button>
+      </nav>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const dots = Array.from(document.querySelectorAll(".progress button"));
+      const slideName = document.querySelector("#slideName");
+      const slideCounter = document.querySelector("#slideCounter");
+      const prevBtn = document.querySelector("#prevBtn");
+      const nextBtn = document.querySelector("#nextBtn");
+      let currentSlide = 0;
+
+      function showSlide(index) {
+        currentSlide = (index + slides.length) % slides.length;
+        slides.forEach((slide, slideIndex) => {
+          slide.classList.toggle("is-active", slideIndex === currentSlide);
+        });
+        dots.forEach((dot, dotIndex) => {
+          dot.classList.toggle("is-active", dotIndex === currentSlide);
+        });
+        slideName.textContent = slides[currentSlide].dataset.slideName;
+        slideCounter.textContent = `${currentSlide + 1} / ${slides.length}`;
+      }
+
+      prevBtn.addEventListener("click", () => showSlide(currentSlide - 1));
+      nextBtn.addEventListener("click", () => showSlide(currentSlide + 1));
+      dots.forEach((dot, index) => {
+        dot.addEventListener("click", () => showSlide(index));
+      });
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight" || event.key === " ") showSlide(currentSlide + 1);
+        if (event.key === "ArrowLeft") showSlide(currentSlide - 1);
+        if (event.key === "0") showSlide(9);
+        if (/^[1-9]$/.test(event.key)) showSlide(Number(event.key) - 1);
+      });
+
+      showSlide(0);
+
+      window.__timelines = window.__timelines || {};
+      if (window.gsap) {
+        const timeline = gsap.timeline({ paused: true });
+
+        slides.forEach((slide) => {
+          const start = Number(slide.dataset.start);
+          const duration = Number(slide.dataset.duration);
+          timeline.set(slides, { display: "none" }, start);
+          timeline.set(slide, { display: "grid" }, start);
+          timeline.fromTo(
+            slide.querySelectorAll(".kicker, h1, h2, h3, p, .metadata-row, .pill, .timeline-item, .model-card, .capability-list > div, .chat-window, .image-tile, .device-frame, .price-card, .risk-card, .source-card"),
+            { opacity: 0, y: 24 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.7,
+              stagger: 0.08,
+              ease: "power2.out",
+              immediateRender: false
+            },
+            start + 0.15
+          );
+          timeline.to(slide, { opacity: 1, duration }, start);
+        });
+
+        window.__timelines["chatgpt-news-briefing"] = timeline;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "studylens-project-presentation",
+  "description": "Static and HyperFrames-compatible nine-slide university project presentation sample for StudyLens.",
+  "compositionId": "project-presentation-types",
+  "width": 1920,
+  "height": 1080,
+  "durationSeconds": 54,
+  "slideTypes": [
+    "Title",
+    "Goal",
+    "User / Problem",
+    "Design Direction",
+    "Implementation Process",
+    "Demo / Result",
+    "Learnings",
+    "Next Steps",
+    "Q&A / Closing"
+  ]
+}

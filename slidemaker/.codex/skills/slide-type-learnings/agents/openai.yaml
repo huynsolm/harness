@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type Learnings"
+  short_description: "Create learning reflection slides"
+  default_prompt: "Create a HyperFrames learnings slide for this deck."

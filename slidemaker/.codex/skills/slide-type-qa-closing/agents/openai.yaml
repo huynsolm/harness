@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slide Type Q&A Closing"
+  short_description: "Create Q&A and closing slides"
+  default_prompt: "Create a HyperFrames Q&A closing slide for this deck."
